@@ -1,4 +1,4 @@
-use dfa_rs::{Dfa, State, Symbol};
+use dfa_rs::*;
 
 struct DfaTransition {
     pub s1: State,
@@ -6,9 +6,7 @@ struct DfaTransition {
     pub s2: State,
 }
 
-#[test]
-fn deserialize() {
-    let json_string = r#"{
+const TEST_DFA_JSON1: &'static str = r#"{
           "states": [
             "q1",
             "q2",
@@ -36,7 +34,9 @@ fn deserialize() {
           }
         }"#;
 
-    let dfa = Dfa::new(json_string);
+#[test]
+fn deserialize() {
+    let dfa = Dfa::new(TEST_DFA_JSON1);
 
     let states = dfa.get_states();
     assert!(states.contains("q1"));
@@ -93,4 +93,36 @@ fn deserialize() {
             .expect("Transition not found");
         assert_eq!(&expected_transition.s2, transition, "Incorrect transition");
     }
+}
+
+#[test]
+fn accepts() {
+    let dfa = Dfa::new(TEST_DFA_JSON1);
+
+    assert_eq!(dfa.accepts("11111".parse().unwrap()), Acceptance::Accepted);
+    assert_eq!(dfa.accepts("00100".parse().unwrap()), Acceptance::Accepted);
+    assert_eq!(dfa.accepts("11100".parse().unwrap()), Acceptance::Accepted);
+    assert_eq!(dfa.accepts("110011".parse().unwrap()), Acceptance::Accepted);
+    assert_eq!(dfa.accepts("001001".parse().unwrap()), Acceptance::Accepted);
+    assert_eq!(dfa.accepts("0010001".parse().unwrap()), Acceptance::Accepted);
+}
+
+#[test]
+fn rejects() {
+    let dfa = Dfa::new(TEST_DFA_JSON1);
+
+    assert_eq!(dfa.accepts("00000".parse().unwrap()), Acceptance::Rejected);
+    assert_eq!(dfa.accepts("01010".parse().unwrap()), Acceptance::Rejected);
+    assert_eq!(dfa.accepts("001000".parse().unwrap()), Acceptance::Rejected);
+}
+
+#[test]
+fn invalid_alphabet() {
+    let dfa = Dfa::new(TEST_DFA_JSON1);
+
+    assert_eq!(dfa.accepts("a11111".parse().unwrap()), Acceptance::InvalidAlphabet);
+    assert_eq!(dfa.accepts("00100b".parse().unwrap()), Acceptance::InvalidAlphabet);
+    assert_eq!(dfa.accepts("111c00".parse().unwrap()), Acceptance::InvalidAlphabet);
+    assert_eq!(dfa.accepts("111020".parse().unwrap()), Acceptance::InvalidAlphabet);
+    assert_eq!(dfa.accepts("1-11c00".parse().unwrap()), Acceptance::InvalidAlphabet);
 }

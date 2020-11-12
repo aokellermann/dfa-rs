@@ -16,6 +16,7 @@ pub type Language = String;
 pub type Transitions = HashMap<Symbol, State>;
 pub type StateTransitions = HashMap<State, Transitions>;
 
+#[derive(Debug, PartialEq)]
 pub enum Acceptance {
     Accepted,
     Rejected,
@@ -51,5 +52,26 @@ impl Dfa {
     }
     pub fn get_final_states(&self) -> &States {
         &self.final_states
+    }
+
+    pub fn accepts(&self, language: Language) -> Acceptance {
+        let mut walk_state = &self.start_state;
+        for walk_symbol in language.chars() {
+            match self.alphabet.get(&walk_symbol) {
+                None => return Acceptance::InvalidAlphabet,
+                _ => (),
+            }
+            walk_state = match self.state_transitions.get(walk_state) {
+                Some(walk_state_transitions) => match walk_state_transitions.get(&walk_symbol) {
+                    Some(walk_state_transition_for_symbol) => walk_state_transition_for_symbol,
+                    _ => return Acceptance::NoTransition,
+                },
+                _ => return Acceptance::NoTransition
+            }
+        };
+        match self.final_states.get(walk_state) {
+            Some(_) => Acceptance::Accepted,
+            _ => Acceptance::Rejected,
+        }
     }
 }
