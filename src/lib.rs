@@ -81,7 +81,7 @@ struct MultiNfa {
 }
 
 impl Dfa {
-    pub fn new(json_string: &'static str) -> Dfa {
+    pub fn from_json(json_string: &'static str) -> Dfa {
         let nfa: Nfa = serde_json::from_str(json_string).unwrap();
         Dfa::from_nfa(nfa)
     }
@@ -93,7 +93,7 @@ impl Dfa {
                 for (state, nfa_transitions) in nfa.state_transitions.iter() {
                     let state_transitions = transitions
                         .entry(state.clone())
-                        .or_insert_with(||Transitions::new());
+                        .or_insert_with(|| Transitions::new());
                     for (symbol, states) in nfa_transitions {
                         for state in states {
                             state_transitions.insert(symbol.clone(), state.clone());
@@ -260,7 +260,7 @@ impl MultiNfa {
                                       state_transitions);
         };
 
-        // Return if no transitions are possible
+        // Return if transitions are already calculated
         if all_transitions.get(&reachable_current_mstate).is_some() { return; };
 
         // Get transitions for all reachable states.

@@ -74,7 +74,7 @@ fn assert_dfa_acceptance(dfa: Dfa, languages: TestLanguages, acceptance: Accepta
 
 #[test]
 fn deserialize() {
-    let dfa = Dfa::new(TEST_DFA_JSON1);
+    let dfa = Dfa::from_json(TEST_DFA_JSON1);
 
     assert_dfa_state(dfa,
                      vec!["q1", "q2", "q3"],
@@ -94,7 +94,7 @@ fn deserialize() {
 
 #[test]
 fn accepts() {
-    let dfa = Dfa::new(TEST_DFA_JSON1);
+    let dfa = Dfa::from_json(TEST_DFA_JSON1);
 
     assert_dfa_acceptance(dfa,
                           vec!["11111", "00100", "11100", "110011", "001001", "0010001"],
@@ -103,7 +103,7 @@ fn accepts() {
 
 #[test]
 fn rejects() {
-    let dfa = Dfa::new(TEST_DFA_JSON1);
+    let dfa = Dfa::from_json(TEST_DFA_JSON1);
 
     assert_dfa_acceptance(dfa,
                           vec!["00000", "01010", "001000"],
@@ -112,7 +112,7 @@ fn rejects() {
 
 #[test]
 fn invalid_alphabet() {
-    let dfa = Dfa::new(TEST_DFA_JSON1);
+    let dfa = Dfa::from_json(TEST_DFA_JSON1);
 
     assert_dfa_acceptance(dfa,
                           vec!["a11111", "00100b", "111c00", "111020", "1-11c00"],
@@ -121,7 +121,7 @@ fn invalid_alphabet() {
 
 #[test]
 fn deserialize_nfa() {
-    let dfa = Dfa::new(TEST_NFA_JSON1);
+    let dfa = Dfa::from_json(TEST_NFA_JSON1);
 
     assert_dfa_state(dfa,
                      vec!["q1", "q2", "q3", "q0,q1", "q1,q2", "q1,q3", "q2,q3", "q0,q1,q2"],
