@@ -159,7 +159,7 @@ impl Dfa {
         &self.final_states
     }
 
-    pub fn accepts(&self, language: Language) -> Acceptance {
+    pub fn accepts(&self, language: &Language) -> Acceptance {
         let mut walk_state = &self.start_state;
         for walk_symbol in language.chars() {
             match self.alphabet.get(&walk_symbol) {
